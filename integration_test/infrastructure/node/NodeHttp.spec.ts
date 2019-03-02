@@ -24,6 +24,7 @@
 
 import {expect} from "chai";
 import {NodeHttp} from "../../../src/infrastructure/NodeHttp";
+import {TimeSyncHttp} from "../../../src/infrastructure/TimeSyncHttp";
 import {NetworkTypes} from "../../../src/models/node/NetworkTypes";
 import {NisNodeInfo} from "../../../src/models/node/NisNodeInfo";
 import {Node} from "../../../src/models/node/Node";
@@ -39,6 +40,15 @@ describe("NodeHttp", () => {
 
   after(() => {
     NEMLibrary.reset();
+  });
+
+  it("should get node time", (done) => {
+    const timesync = new TimeSyncHttp([{domain: TestVariables.DEFAULT_TEST_DOMAIN}]);
+    timesync.getNetworkTime()
+      .subscribe((time) => {
+        expect(time).to.not.be.undefined;
+        done();
+      });
   });
 
   it("should get node information", (done) => {
