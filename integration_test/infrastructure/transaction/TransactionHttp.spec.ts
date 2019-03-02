@@ -108,7 +108,7 @@ describe("TransactionHttp", () => {
       });
   });
 
-  it.only("should create a TRANSFER with node network time", async () => {
+  it("should create a TRANSFER with node network time", async () => {
     const timesync = new TimeSyncHttp([{domain: TestVariables.DEFAULT_TEST_DOMAIN}]);
 
     let timestamp = await timesync.getNetworkTime().toPromise();
