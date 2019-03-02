@@ -55,9 +55,19 @@ export class TimeWindow {
    * @param chronoUnit
    * @returns {TimeWindow}
    */
-  public static createWithDeadline(deadline: number = 2, chronoUnit: ChronoUnit = ChronoUnit.HOURS): TimeWindow {
+  public static createWithDeadline(nodeTime: number = 0, deadline: number = 2, chronoUnit: ChronoUnit = ChronoUnit.HOURS): TimeWindow {
+    let timeStampDateTime;
+
     const currentTimeStamp = (new Date()).getTime();
-    const timeStampDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(currentTimeStamp), ZoneId.SYSTEM);
+    timeStampDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(currentTimeStamp), ZoneId.SYSTEM);
+
+    if (nodeTime != 0) {
+      let receiveTimeStamp = nodeTime / 1000;
+      let nodeTimeStamp = Math.floor(receiveTimeStamp) + Math.floor(new Date().getSeconds() / 10);
+
+      timeStampDateTime = TimeWindow.createLocalDateTimeFromNemDate(nodeTimeStamp);
+    }
+
     const deadlineDateTime = timeStampDateTime.plus(deadline, chronoUnit);
 
     if (deadline <= 0) {
