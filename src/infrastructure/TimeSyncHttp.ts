@@ -37,7 +37,7 @@ export class TimeSyncHttp extends HttpEndpoint {
    * Requests network time.
    * @returns Observable<number>
    */
-  public getNetworkTime(): Observable<any> {
+  public getNetworkTime(): Observable<number> {
     return of("network-time")
       .pipe(
         flatMap((url) => requestPromise.get(this.nextNode() + url, {json: true})),

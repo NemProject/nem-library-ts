@@ -25,6 +25,7 @@ import {expect} from "chai";
 import {Observable} from "rxjs";
 import {AssetHttp} from "../../../src/infrastructure/AssetHttp";
 import {TransactionHttp} from "../../../src/infrastructure/TransactionHttp";
+import {TimeSyncHttp} from "../../../src/infrastructure/TimeSyncHttp";
 import {Account} from "../../../src/models/account/Account";
 import {Address} from "../../../src/models/account/Address";
 import {AssetId} from "../../../src/models/asset/AssetId";
@@ -35,6 +36,7 @@ import {TimeWindow} from "../../../src/models/transaction/TimeWindow";
 import {TransferTransaction} from "../../../src/models/transaction/TransferTransaction";
 import {NEMLibrary} from "../../../src/NEMLibrary";
 import {TestVariables} from "../../../test/config/TestVariables.spec";
+import { async } from "rxjs/internal/scheduler/async";
 
 declare let process: any;
 
@@ -104,5 +106,27 @@ describe("TransactionHttp", () => {
         expect(transaction.getTransactionInfo().hash.data).to.be.equal(hash);
         done();
       });
+  });
+
+  it.only("should create a TRANSFER with node network time", async () => {
+    const timesync = new TimeSyncHttp([{domain: TestVariables.DEFAULT_TEST_DOMAIN}]);
+
+    let timestamp = await timesync.getNetworkTime().toPromise();
+
+    const transactionHttp = new TransactionHttp([{domain: TestVariables.DEFAULT_TEST_DOMAIN}]);
+    const account = Account.createWithPrivateKey(privateKey);
+
+    const transferTransaction = TransferTransaction.create(
+      TimeWindow.createWithDeadline(timestamp),
+      new Address(recipientAccount),
+      new XEM(0),
+      PlainMessage.createFromDTO('74657374207472616e73616374696f6e')
+    );
+
+     const signedTransaction = account.signTransaction(transferTransaction);
+
+      let result =  await transactionHttp.announceTransaction(signedTransaction).toPromise();
+      expect(result.message).to.equal("SUCCESS");
+      expect(result.transactionHash.data).to.not.null;
   });
 });
