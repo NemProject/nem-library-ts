@@ -50,7 +50,7 @@ export class TimeWindow {
     this.timeStamp = timeStamp;
   }
 
-  /**
+/**
    * @param deadline
    * @param chronoUnit
    * @returns {TimeWindow}
@@ -58,6 +58,36 @@ export class TimeWindow {
   public static createWithDeadline(deadline: number = 2, chronoUnit: ChronoUnit = ChronoUnit.HOURS): TimeWindow {
     const currentTimeStamp = (new Date()).getTime();
     const timeStampDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(currentTimeStamp), ZoneId.SYSTEM);
+    const deadlineDateTime = timeStampDateTime.plus(deadline, chronoUnit);
+
+    if (deadline <= 0) {
+      throw new Error("deadline should be greater than 0");
+    } else if (timeStampDateTime.plus(24, ChronoUnit.HOURS).compareTo(deadlineDateTime) != 1) {
+      throw new Error("deadline should be less than 24 hours");
+    }
+
+    return new TimeWindow(timeStampDateTime, deadlineDateTime);
+  }
+
+  /**
+   * @param nodeTime
+   * @param deadline
+   * @param chronoUnit
+   * @returns {TimeWindow}
+   */
+  public static createWithNodeTimeAndDeadline(nodeTime: number = 0, deadline: number = 2, chronoUnit: ChronoUnit = ChronoUnit.HOURS): TimeWindow {
+    let timeStampDateTime;
+
+    const currentTimeStamp = (new Date()).getTime();
+    timeStampDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(currentTimeStamp), ZoneId.SYSTEM);
+
+    if (nodeTime != 0) {
+      let receiveTimeStamp = nodeTime / 1000;
+      let nodeTimeStamp = Math.floor(receiveTimeStamp) + Math.floor(new Date().getSeconds() / 10);
+
+      timeStampDateTime = TimeWindow.createLocalDateTimeFromNemDate(nodeTimeStamp);
+    }
+
     const deadlineDateTime = timeStampDateTime.plus(deadline, chronoUnit);
 
     if (deadline <= 0) {
