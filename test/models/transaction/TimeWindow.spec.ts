@@ -38,7 +38,7 @@ describe("TimeWindow", () => {
   });
 
   it("should create window deadline 10s", () => {
-    const timeWindow = TimeWindow.createWithDeadline(0,10, ChronoUnit.MINUTES);
+    const timeWindow = TimeWindow.createWithDeadline(10, ChronoUnit.MINUTES);
     expect(timeWindow.deadlineToDTO() - timeWindow.timeStampToDTO()).to.be.equal(10 * 60);
   });
 
@@ -58,7 +58,7 @@ describe("TimeWindow", () => {
 
   it("should throw error deadline greater than 24h", () => {
     expect(() => {
-      TimeWindow.createWithDeadline(0,2, ChronoUnit.DAYS);
+      TimeWindow.createWithDeadline(2, ChronoUnit.DAYS);
     }).to.throw(Error);
   });
 

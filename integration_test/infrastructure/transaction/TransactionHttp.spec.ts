@@ -108,7 +108,7 @@ describe("TransactionHttp", () => {
       });
   });
 
-  it("should create a TRANSFER with node network time", async () => {
+  it("Create a TRANSFER with node network time", async () => {
     const timesync = new TimeSyncHttp([{domain: TestVariables.DEFAULT_TEST_DOMAIN}]);
 
     let timestamp = await timesync.getNetworkTime().toPromise();
@@ -117,7 +117,7 @@ describe("TransactionHttp", () => {
     const account = Account.createWithPrivateKey(privateKey);
 
     const transferTransaction = TransferTransaction.create(
-      TimeWindow.createWithDeadline(timestamp),
+      TimeWindow.createWithNodeTimeAndDeadline(timestamp),
       new Address(recipientAccount),
       new XEM(0),
       PlainMessage.createFromDTO('74657374207472616e73616374696f6e')
